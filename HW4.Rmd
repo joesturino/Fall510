@@ -1,0 +1,167 @@
+---
+title: "R HW4"
+author: "Joe Sturino"
+date: "October 1, 2015"
+output: html_document
+---
+
+
+#Problem 1
+
+'''{r}
+#a)
+#stores the numbers 1 to 20 in a list (vector) via command c to v
+v <- c(1:20) 
+#calling what v was just stored as to check it is indeed a vector
+v
+#b)
+#stores numbers in a vector(list) from 20 to 1 to v2
+v2 <- c(20:1)
+#calling v2 to produce the vector
+v2
+#c)
+#sores vector created through command c to get numbers from 1 to 20 and back to 1 in the vector
+v3 <- c(1:20,19:1)
+#calls values we just stored as a vector in v3
+v3
+#d)
+#stored the values of a vector to 'tmp' 
+tmp <- (4,6,3)
+#called the vector we just defined as 'tmp'
+tmp
+#e)
+#the vector chosen in the problem is the same as what we just stored          'tmp'. Using the rep() function we repeat that string 10 times as             described to get the 10 '4s' we want
+rep(tmp,10) 
+#f)
+#similar to part e, the rep() function repeat the specified   c                 vector, 'tmp' until the length is 31 because to get 11 4s it is                 ten repitions plus an extra 4, so the length would be 30 for the                full 10 repitions and then 1 extra in length for the extra 4
+rep(tmp, l=31) 
+'''
+
+#Problem 2
+
+'''{r}
+#stored values using the seq() to get all the values between 3 and 6 in incriments of .1
+x <- seq(3,6,by=0.1)
+#checking to make sure x is what I want it to be
+x
+#taking the values of the seq created for x and plugging them into this function yields all results in vector form
+c(exp(x)*cos(x))
+'''
+
+#Problem 3
+
+'''{r}
+#a)
+#created a vector with command c that takes the sequence for .1 and .2 respectiveley and multiplies those values to give the value for the vector
+c((0.1^seq(3,36,by=3))*(0.2^seq(1,34,by=3)))
+#b)
+#created a vector with command c that takes all values of (2^n)/n where n is between 1 and 25, no need for a sequence because the incriment is increasing by only 1
+c(2^(1:25)/(1:25))
+'''
+
+#Probelm 4
+
+'''{r}
+#a)
+#stores values from 10 to 100 in a vector described as y
+y <- c(10:100)
+#the sum() function is used for summation equations and plugging the values of vector y into the summation retuirns the answer of the sum of values from 10 to 100 for the specified function
+sum(y^3+4*y^2)
+#b)
+#stored values from 1 to 25 in a vector labeled 'i'
+i <- c(1:25) 
+#took values from vector i and plugged them into the sum() function to yeild the answer
+sum((2^i/i)+(3^i/i^2))
+'''
+
+#Probelm 5
+
+'''{r}
+#a)
+#used the paste() function to return a vector with a WORD with a number at the end from 1 to 30
+paste("label", 1:30)
+#b)
+#used paste() similar to part a but after denoting how many pastes should occur, sep="" denotes there should be no spacing between the string and number attachment. If it were a period between the "", then the string and integer would be seperated by a '.'
+paste("fn",1:30, sep="")
+'''
+
+#Problem 6
+
+'''{r}
+xVec <- sample(0:999, 250, replace=T)
+yVec <- sample(0:999, 250, replace=T)
+#a)
+#created a vector with command c of function involving components of the rand vectors xVec and yVec
+#yVec[-1] pulls out the y1 value which is not need since the eqn starts with y2
+#then subtracts the values in yVec by the corresponging xVec value starting with the first and going through the list untill there is none left, increasing the yVec every loop through the eqn.
+c(yVec[-1]-xVec[-length(xVec)])
+#b)
+#created a vector with command c that is the values of the function sin/cos
+#since the top of the function has the first value being y1 we can take the length of yVec and start at y1 and subtract whatever value we are on until we run out of values in the vector
+#then within the function for each term the cos(y1) is / by x2 so [-1] gets rid of the first value in the string of xVec
+c(yVec[-length(yVec)]/xVec[-1])
+#c)
+#created a vector with command c to return values of a function
+#the function takes all the values of the x vector besides the last two so the first value subtracts the vector consisting of the last two elements
+#the second part of the function takes 2 times all the elements in the xVEc from 1 to 250, one at a time without replacement
+#The final value in the function takes all the values of the xVec besides the first two so we subtract the sub vector created with the function similar to the previous parts to subtract the first two elements in xVEc
+#The total function yeilds values of a new vector
+c(xVec[-c(249,250)]+2*xVec[-c(1,250)]-xVec[-c(1,2)])
+#d)
+#used sum() function to create a vector with command c
+#the sum takes the e^negative values in xVec besides the first value (that way we start with x2) and divides that value by the value of xVec being evaluated + 10
+#all these values for the elements in xVec will be summed by the sum() function to yield the answer
+c(sum(exp(-xVec[-1])/xVec[-length(xVec)]+10))
+'''
+
+#Problem 7
+
+'''{r}
+xVec <- sample(0:999, 250, replace=T)
+yVec <- sample(0:999, 250, replace=T)
+#a)
+#returns the values that are in yVec that are greater than 600, which is cool because yVec is a random vector created so its pulling out the numbers supper quick from something that was just made
+yVec[yVec>600]
+#b)
+#returns the POSITION IN THE LIST from the first element to the last within the list described as a vector, yVec, that are greater than 600
+(1:length(yVec))[yVec>600]
+#c)
+#returns the values in xVec that are in the same position as those in yVec that are greater than 600 based on the index notation used '[ ]'
+xVec[yVec>600]
+#d)
+#created a vector with command c that is the vector of the return values of the function described
+#the function takes the square root of the absolute value of each value in xVec - the mean of xVec
+#the mean() function allows for quick calculation of a mean of a specified vector in this case, could be a list too
+#once all values of the function are evaluated the vector is formed like a list of the returned values
+c(sqrt(abs(xVec-mean(xVec))))
+#e)
+#sum() function allows us to add number of values in the function together
+#the sum() is defined as all the values in yVec that at least 200 away from the maximum value of yVec
+sum(yVec>max(yVec)-200)
+#f)
+#sum() function used to add up the number of values that satisfy the function of the sum
+#%% denotes 'mod' which is how you determine which values are divisble by to within xVec
+#as long as xVec mod 2 == 0 (== denotes 'absolute' equals) than the count goes up one in the sum() function
+sum(xVec%%2==0)
+#g)
+#order90 function takes the order of the elements in xVec and aligns them with the order they appear in yVec
+xVec[order(yVec)]
+#f)
+#takes the values in yVec that meat the index requirement
+#the index states that yVec is broken into subsets of length 3 and the returned vector should only return the first value in each subset vector
+yVec[c(T,F,F)]
+#wanted to check to make sure the values matched up how they should via the code I wrote
+yVec
+'''
+
+#Problem 8
+
+'''{r}
+#cumprod() function returns the mutiplication results as the accumulate within the seq() functions
+#the seq() functions take the values of 2 to 38 divided by values between 3 and 39 where each next entry is the mulitplication of all previous values in each sequence in both the numerator and denomenator
+#each entry after going through the cumprod() function is then added together via the sum() function
+#the '1' doesnt fit easily into the sequence so it is just defined outside of the sum 
+1+sum(cumprod(seq(2,38,by=2)/seq(3,39,by=2)))
+'''
+
+
