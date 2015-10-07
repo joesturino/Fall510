@@ -1,0 +1,53 @@
+---
+title: "HW 5 R"
+author: "Joe Sturino"
+date: "October 5, 2015"
+output: html_document
+---
+#Problem 1)
+
+'''{r}
+
+#calling the data frame of diamonds to be used
+data(diamonds)
+#viewing the components that make up the data frame of diamonds
+str(diamonds)
+
+#defined a new vector that uses the method sapply which takes all the parts of the data frame diamonds in this case and pulls out the ones that are numeric in nature
+numericCol <- diamonds[sapply(diamonds, is.numeric)]
+#str() of the newly defined numericCol vector shows the parts of Diamonds dataframe that actually are  numeric
+
+str(numericCol)
+'''
+
+#Problem 2)
+
+'''{r}
+data(diamonds)
+numericCol <- diamonds[sapply(diamonds, is.numeric)]
+numericCol <- within(numericCol, "carat-depth" <- paste(diamonds$carat,diamonds$depth, sep = "-"))
+
+numericCol <- within(numericCol, "depth-table" <- paste(diamonds$depth,diamonds$table, sep = "-"))
+
+numericCol <- within(numericCol, "table-price" <- paste(diamonds$table,diamonds$price, sep = "-"))
+
+numericCol <- within(numericCol, "price-x" <- paste(diamonds$price,diamonds$x, sep = "-"))
+
+numericCol <- within(numericCol, "x-y" <- paste(diamonds$x,diamonds$y, sep = "-"))
+
+numericCol <- within(numericCol, "y-z" <- paste(diamonds$y,diamonds$z, sep = "-"))
+
+#numericCol <- subset(numericCol, select = -c(1,2,3,4,5,6,7))
+
+str(numericCol)
+
+
+'''{r}
+w <- c(1,2,3,4,5)
+x <- c(6,7,8,9,10)
+y <- c(11,12,13,14,15)
+z <- c(16,17,18,19,20)
+df = data.frame(w,x,y,z)
+str(df)
+
+'''

@@ -1,0 +1,26 @@
+---
+title: "HW 5 R"
+author: "Joe Sturino"
+date: "October 5, 2015"
+output: html_document
+---
+#Problem 1)
+
+'''{r}
+
+#calling the data frame of diamonds to be used
+data(diamonds)
+#viewing the components that make up the data frame of diamonds
+str(diamonds)
+
+#defined a new vector that uses the method sapply which takes all the parts of the data frame diamonds in this case and pulls out the ones that are numeric in nature
+numericCol <- diamonds[sapply(diamonds, is.numeric)
+#str() of the newly defined numericCol vector shows the parts of Diamonds dataframe that actually are  numeric
+str(numericCol)
+'''
+
+#Problem 2)
+
+'''{r}
+data(diamonds)
+str(diamonds)
