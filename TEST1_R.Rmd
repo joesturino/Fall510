@@ -1,0 +1,126 @@
+---
+title: "TEST1_R"
+author: "Joe Sturino"
+date: "October 12, 2015"
+output: html_document
+---
+Question 1)
+
+'''{r}
+#called the data from the builtin dataframe diamonds to be used
+data(diamonds)
+#called the data from the builtin dataframe mtcars to be used
+data(mtcars)
+#checking out the original dataframe of mtcars
+str(mtcars)
+#pulling out the specific variable (vs) and corresponding vector to be looked at in this problem
+str(mtcars$vs)
+
+#creating a new vector that returns true if the value in mtcars$vs is equal to 1 and false otherwise
+mtcars$vsLog <- mtcars$vs == 1
+#checking to make sure that is exactly what was done to create the new vector mtcars$vsLog
+str(mtcars$vsLog)
+
+#since the vector created from mtcars is only of length 32 and we want to place it in diamonds which is a much larger dataframe we need to manipulate this new vector to fit in diamonds data frame
+
+#using the table function we can see exactly how many "true" and "false" elements there are within the vector mtcars$vsLog
+a <- table(mtcars$vsLog)
+#displaying how many trues and falses there are
+a
+#determining the length of the entire vector we created 
+#we need these inorder to find the proportion of trues and falses need to populate the vector so we can place it in the diamonds data
+length(mtcars$vsLog)
+
+#once we have the propotion we need to create a new vector with that proportion of trues and falses we do so
+
+#LogEq becomes the new vector that is described using the as.logical method to incorporate the new vector as a logical vector, then we take true and repeat it roughly 23599 times or roughly 44 % of the time, and false is repeated the remaining 30341 times to make this vector of a length long enough to fit into the diamonds dataframe
+
+#we will use this piece later to put LogEq into diamonds
+LogEq <- as.logical(rep(c("True", "False"),c(23599,30341)))
+
+#checking to see that it worked
+str(LogEq)
+
+#since the console only shows a certain amount of values in a vector to make sure there are false values, I picked a random value towards the end of the vector to make sure there is false values
+LogEq[50000]
+
+#more extensive checking to make sure, the amount of "true" elements and "false" elements match what they need to be
+x1 <-table(LogEq)
+x1
+
+#we reassign data diamonds to have a new column within the dataframe, with title 'logEg' that takes the vector we created 'LogEq' as a logical vector and places it in diamonds based on the proportion of trues and falses determined earlier
+diamonds <- within(diamonds, 'LogEq' <- as.logical(rep(c("True", "False"),c(23599,30341))))
+str(diamonds)
+#checking to see it is in the newly assigned diamonds
+str(diamonds$LogEq)
+diamonds$LogEq[50000]
+#more checking using the tables to make sure there is the correct amount of trues and falses
+b <- table(diamonds$LogEq)
+b
+'''
+
+Question 2)
+'''{r}
+#assigned newdiamonds to be all the columns in diamonds that are ordinal factor vectors
+#using the sapply function we take all the vectors in diamonds that are ord. fact in nature and places them in newdiamonds
+newdiamonds <- diamonds[sapply(diamonds, is.factor)]
+#assigned newdiamonds1 to be all the logical vectors found in diamonds and places them in newdiamonds1 via the sapply function
+newdiamonds1 <- diamonds[sapply(diamonds, is.logical)]
+
+#checking to make sure these newly assigned data frames are infact all the ord. fact vectors and logical vector respectively
+str(newdiamonds)
+str(newdiamonds1)
+
+'''
+
+Question 3)
+
+'''{r}
+
+#to make bar graphs we will need the packages grid and ggplot2
+#here is where we make sure these packages are functional beforer we begin to construct bar graphs
+require(grid)
+require(ggplot2)
+#the question asks for all bar graphs of the variables in diamonds that are ordinal vactor or logical in nature
+#reffering to the subsets of diamonds dataframe created in problem 2 will make it easier to graph these variables
+str(newdiamonds)
+str(newdiamonds1)
+
+#bar graph one is defined here by using the function ggplot to map all the variable names in the subset data frame diamonds$cut to the x axis and count how many times that variable happens
+bargraph_1 <- ggplot(diamonds, aes(x=diamonds$cut))
+str(bargraph_1)
+
+#taking the ggplot function we created and adding the actual bars of the graph to it with specific attributes
+bargraph_1 + geom_bar(fill="gray", colour = "black") + labs(x=names(diamonds)[[2]]) 
+
+#bar graph one is defined here by using the function ggplot to map all the variable names in the subset data frame diamonds$color to the x axis and count how many times that variable happens
+bargraph_2 <- ggplot(diamonds, aes(x=diamonds$color))
+str(bargraph_1)
+
+#taking the ggplot function we created and adding the actual bars of the graph to it with specific attributes
+bargraph_2 + geom_bar(fill="gray", colour = "black") + labs(x=names(diamonds)[[3]])
+
+#bar graph one is defined here by using the function ggplot to map all the variable names in the subset data frame diamonds$clarity to the x axis and count how many times that variable happens
+bargraph_3 <- ggplot(diamonds, aes(x=diamonds$clarity))
+str(bargraph_1)
+
+#taking the ggplot function we created and adding the actual bars of the graph to it with specific attributes
+bargraph_3 + geom_bar(fill="gray", colour = "black") + labs(x=names(diamonds)[[4]])
+
+#bar graph one is defined here by using the function ggplot to map all the variable names in the subset data frame diamonds$LogEq or diamonds[11], to the x axis and count how many times that variable happens
+bargraph_4 <- ggplot(diamonds[11], aes(x=diamonds[[11]]))
+str(bargraph_4)
+
+#taking the ggplot function we created and adding the actual bars of the graph to it with specific attributes
+bargraph_4 + geom_bar(fill="gray", colour = "black") + labs(x=names(diamonds)[[11]]) 
+'''
+
+Question 4)
+'''{r}
+#using the table function returns frequency tables for each of the specified categorical and logical vectors in the Diamonds data
+#c() is the function used to create a vector, which is the same thing as a list
+myList1 <- c(table(diamonds$cut), table(diamonds$color), table(diamonds$clarity), table(diamonds$LogEq))
+#checked the structure and actual list of the frequencys here to make sure it worked
+str(myList1)
+List1
+'''
