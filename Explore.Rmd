@@ -1,0 +1,154 @@
+---
+title: "Explore HW5"
+author: "Joe Sturino"
+date: "October 19, 2015"
+output: html_document
+---
+
+
+'''{r}
+#brought in require packages to plot bar graphs and histograms 
+require(grid)
+require(ggplot2)
+
+#confirming that the dataframe being used is in the enviornment
+data(diamonds)
+#reconfigured diamonds to include the logical column from test1
+diamonds <- within(diamonds, 'LogEq' <- as.logical(rep(c("True", "False"),c(23599,30341))))
+#checking the structure of our new diamonds data frame
+str(diamonds)
+
+#subsetted dataframes from diamonds that will be used 
+#all numeric variables of diamonds
+var_num <- diamonds[which(lapply(diamonds, is.numeric) == TRUE)]
+#all factor variables from diamonds
+var_factor <- diamonds[which(lapply(diamonds, is.factor) == TRUE)]
+#all logical variables from diamonds
+var_logical <- diamonds[which(lapply(diamonds, is.logical) == TRUE)]
+
+#defined a function named explore that takes three parameters as inputs inorder to produce multiple things
+explore <- function(datF, bin_sizes, cor_thresh) 
+{
+
+# 1)
+
+#start of a for loop that takes all variables in the subset df var_num
+  for (i in 1:length(var_num))
+  {
+#nested for loop that takes the parameter of bin sizes to manipulate each variable in the subset df var_num  
+    for (bins in 1:length(bin_sizes))
+    {
+#calculating bin sizes and storing them (multiple because of the loop for ALL variables in var_num) in 'bin_num'
+      bin_num <- (max(var_num[[i]])-min(var_num[[i]]))/bin_sizes[bins]
+      
+#Calculating the mean and giving it a label within each graph
+      col_mean <- mean(var_num[[i]])
+      mean_Label = sprintf("%8.2f ", col_mean)
+      
+#next we plot our regular histogram where the y axis is the count
+#NOTE: enviornment = environment() is very important to make sure ggplot knows to stay within the function to plot the histograms
+      explore <- ggplot(var_num, aes(x=var_num[[i]]),
+                         environment = environment())
+#changing the x axis label depending on which variable is being ran through the loop, color of the historgram, and the varying binwidth
+#geom_vline adds the red mean line which is mapped on the graph in correlation with col_mean and mean_label we set up earlier
+      explore <- explore +
+        geom_histogram(colour = 'blue',
+                       fill = 'blue',
+                       binwidth=bin_num) +
+        labs(x=names(var_num)[[i]]) +
+        geom_vline(xintercept=col_mean, colour='red') +
+        annotate("text",x=col_mean,y=0,label=mean_Label,hjust=0)
+#printing the histograms
+      print(explore)
+
+#next we need the density version of the histograms, denoted by changing the x axis to encompass ..density.. a built in, rather than count      
+      print(explore + aes(y=..density..) + labs(y="Density"))
+    }
+  }
+  
+# 2)  
+  
+#creating bar graphs for the logical variable subsetted dataframe with a for loop that makes a graph for each variable in var_logical
+  for ( k in 1:length(var_logical))
+    {
+#creating bar graphs with ggplot   
+#NOTE: enviornment line again
+      explore <- ggplot(var_logical, aes(x=var_logical[[k]]), 
+      environment = environment()) 
+#changing the color of the bar graphs and the x axis labels for each graph
+explore <- explore + geom_bar(fill="gray", colour="gray") + labs(x=names(var_logical)[k])
+#printing the graphs
+print(explore) 
+      }
+
+# 3)      
+      
+#computing the r-square values for every numeric variable in var_num which is all numeric variables      
+    for(x in 1:ncol(var_num))
+      {
+#used builtin cor() to find the square of each pair of elements in var_num
+      r_square <- cor((var_num)[[x]] ,(var_num)[[x+1]])^2
+      print(r_square)
+      }
+#computing frequency tables for each variable in the subset df, var_factor with a for loop
+    for (k in 1:ncol(var_factor[k]))
+      {
+#frequency table for all factor variables in diamonds
+      freq_a <- c(table(var_factor[[k]]))
+#checking the structure
+      str(freq_a)
+#printing the tables
+      print(freq_a)
+  }
+  
+# 4) A:
+
+#computing frequency tables for each variable in the subset df, var_logical with a for loop  
+    for (k in 1:ncol(var_logical))
+    {
+#frequency table for all logical variables in diamonds
+    freq_b <- c(table(var_logical[[k]]))
+#printing the tables
+    print(freq_b)
+  }
+# 4) B: part (i)
+
+#for loop that uses summary() to produce descriptive stat tables for all variables that are numeric  
+    for (i in 1:length(var_num))
+    {
+    summary <- summary(var_num[i])
+#printing the discriptive stat tables
+    print(summary)
+  }
+  
+# 4) B: part (ii)
+
+#creating a data frame that pairs the variables that are numeric in diamonds
+#the elements of those variables consist of the r square values of those repective variables
+
+#similar to how I computed this in Hw 5
+
+var_num1 <- diamonds[sapply(diamonds, is.numeric)]
+var_num1 <- within(var_num1, "carat-depth" <- (cor((var_num)[[1]] ,(var_num)[[2]])^2) 
+var_num1 <- within(var_num1, "depth-table" <- cor((var_num)[[2]] ,(var_num)[[3]])^2)
+var_num1 <- within(var_num1, "table-price" <- cor((var_num)[[3]] ,(var_num)[[4]])^2)
+var_num1 <- within(var_num1, "price-x" <- cor((var_num)[[4]] ,(var_num)[[5]])^2)
+var_num1 <- within(var_num1, "x-y" <- cor((var_num)[[5]] ,(var_num)[[6]])^2)
+var_num1 <- within(var_num1, "y-z" <- cor((var_num)[[6]] ,(var_num)[[7]])^2)
+
+#deleting the variables that are not pairs in num_var1
+var_num1 <- subset(var_num1, select = -c(1,2,3,4,5,6,7))
+
+# 4 B: part (iii)
+
+
+
+  
+}
+
+
+
+
+explore(diamonds, c(5, 20, 50))
+
+'''
