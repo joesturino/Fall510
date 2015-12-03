@@ -1,0 +1,357 @@
+---
+title: "Exam 2_R"
+author: "Joe Sturino"
+date: "November 29, 2015"
+output: html_document
+---
+
+
+
+'''{r}
+#bringing in the data set abalone to use on the exam
+uciaddress <- "http://archive.ics.uci.edu/ml/machine-learning-databases/"
+dataset <- "abalone/abalone.data"
+getdataset <- paste(uciaddress, dataset, sep="")
+abalone <- read.csv(getdataset)
+#renaming the variables in the abalone data frame
+colnames(abalone) <- c("Gender","Length","Diameter",
+                       "Height", "Whole_wgt",
+                       "Shucked_wgt", "Viscera wgt",
+                       "Shell wgt", "Rings")
+#making sure the data frame looks as it should                       
+str(abalone)
+'''
+
+#sample sizes: 1% -> 42 (rounded)
+#              10% -> 418 (rounded)
+#              25% -> 1044
+#              50% -> 2088
+#              80% -> 3341 (rounded)
+#              100% -> 4176
+
+'''{r}
+#1)
+
+randomSample = function(dataframe,n,replacement) {     
+  return (dataframe[sample(nrow(dataframe), n, replace=replacement),]) }
+
+#generating sample sizes from abalone dataframe
+sample1 <- randomSample(abalone, 42, FALSE)
+sample10 <- randomSample(abalone, 418, FALSE)
+sample25 <- randomSample(abalone, 1044, FALSE)
+sample50 <- randomSample(abalone, 2088, FALSE)
+sample80 <- randomSample(abalone, 3341, FALSE)
+sample100 <- randomSample(abalone, 4176, FALSE)
+
+#minimum values for each sample size
+
+a <- min(sample1$Whole_wgt)
+b <- min(sample10$Whole_wgt)
+c <- min(sample25$Whole_wgt)
+d <- min(sample50$Whole_wgt)
+e <- min(sample80$Whole_wgt)
+f <- min(sample100$Whole_wgt)
+
+#vector created to store each min value
+SampleMin <- c(a, b, c, d, e, f)
+
+#maximum values for each sample size
+
+aa <- max(sample1$Whole_wgt)
+bb <- max(sample10$Whole_wgt)
+cc <- max(sample25$Whole_wgt)
+dd <- max(sample50$Whole_wgt)
+ee <- max(sample80$Whole_wgt)
+ff <- max(sample100$Whole_wgt)
+
+#vector created to store each max value
+SampleMax <- c(aa, bb, cc, dd, ee, ff)
+
+#mean values for each sample size
+
+m1 <- mean(sample1$Whole_wgt)
+m2 <- mean(sample10$Whole_wgt)
+m3 <- mean(sample25$Whole_wgt)
+m4 <- mean(sample50$Whole_wgt)
+m5 <- mean(sample80$Whole_wgt)
+m6 <- mean(sample100$Whole_wgt)
+
+#vector created to store each mean value
+SampleMean <- c(m1, m2, m3, m4, m5, m6)
+
+#variance values for each sample size
+v1 <- var(sample1$Whole_wgt)
+v2 <- var(sample10$Whole_wgt)
+v3 <- var(sample25$Whole_wgt)
+v4 <- var(sample50$Whole_wgt)
+v5 <- var(sample80$Whole_wgt)
+v6 <- var(sample100$Whole_wgt)
+
+#vector created to store each variance value
+SampleVar <- c(v1, v2, v3, v4, v5, v6)
+
+#putting all the calculated vectors into one dataframe
+df <- data.frame(SampleMin, SampleMax, SampleMean, SampleVar)
+#asks for columns to be sample sizes, used the transpose function to flip the df and store it as itself
+df <- data.frame(t(df))
+#checking to make sure it is right
+str(df)
+
+#renaming column names to reflect the sample size
+colnames(df) <- c("1%Sample", "10%Sample", "25%Sample", "50%Sample", "80%Sample", "100%Sample")
+
+#double checking
+str(df)
+
+'''
+
+'''{r}
+#2)
+
+#requiring grid and ggplot2 to make histograms
+require(grid)
+require(ggplot2)
+
+
+#created a histogram for each sample size from part 1
+
+#1% sample histogram
+p1 <- ggplot(df[1], aes(x=df[[1]]))
+p1 <- p1 + geom_histogram(colour = 'black',fill = 'gray') + labs(x=names(df)[[1]])
+print(p1)
+
+#10% sample histogram
+p2 <- ggplot(df[2], aes(x=df[[2]]))
+p2 <- p2 + geom_histogram(colour = 'black',fill = 'gray') + labs(x=names(df)[[2]])
+print(p2)
+
+#25% sample histogram
+p3 <- ggplot(df[3], aes(x=df[[3]]))
+p3 <- p3 + geom_histogram(colour = 'black',fill = 'gray') + labs(x=names(df)[[3]])
+print(p3)
+
+#50% sample histogram
+p4 <- ggplot(df[4], aes(x=df[[4]]))
+p4 <- p4 + geom_histogram(colour = 'black',fill = 'gray') + labs(x=names(df)[[4]])
+print(p4)
+
+#80% sample histogram
+p5 <- ggplot(df[5], aes(x=df[[5]]))
+p5 <- p5 + geom_histogram(colour = 'black',fill = 'gray') + labs(x=names(df)[[5]])
+print(p5)
+
+#100% sample histogram
+p6 <- ggplot(df[6], aes(x=df[[6]]))
+p6 <- p6 + geom_histogram(colour = 'black',fill = 'gray') + labs(x=names(df)[[6]])
+print(p6)
+
+#using the built in grid.arrange from GridExtra package to create a grid of the graphs just composed above
+grid.arrange(p1, p2, p3, p4, p5, p6, ncol = 2)
+
+'''
+
+'''{r}
+#3)
+#creating empty vectors before the loop which will be populated with results form the loop
+sample1a=c(rep(0, times=1000))
+sample10a=c(rep(0, times=1000))
+sample25a=c(rep(0, times=1000))
+sample50a=c(rep(0, times=1000))
+sample80a=c(rep(0, times=1000))
+
+#for loop that takes 1000 samples at each sample size from abalone and then calculates the mean at each iteration 
+for (i in 1:1000){
+randomSample = function(dataframe,n,replacement) {     
+  return (dataframe[sample(nrow(dataframe), n, replace=replacement),]) }
+  sample1 <- randomSample(abalone, 42, FALSE)
+  sample10 <- randomSample(abalone, 418, FALSE)
+  sample25 <- randomSample(abalone, 1044, FALSE)
+  sample50 <- randomSample(abalone, 2088, FALSE)
+  sample80 <- randomSample(abalone, 3341, FALSE)
+
+sample1mean1=mean(sample1[,5])
+sample1a[i]=sample1mean1
+
+sample10mean1=mean(sample10[,5])
+sample10a[i]=sample10mean1
+
+sample25mean1=mean(sample25[,5])
+sample25a[i]=sample25mean1
+
+sample50mean1=mean(sample50[,5])
+sample50a[i]=sample50mean1
+
+sample80mean1=mean(sample80[,5])
+sample80a[i] = sample80mean1
+
+}
+
+#combining all the calculated means from the for loop above into a data frame labeled A
+A=data.frame(cbind(sample1a, sample10a, sample25a, sample50a, sample80a))
+#renaming the columns in the new data frame
+colnames(A) <- c("1%Sample", "10%Sample", "25%Sample", "50%Sample", "80%Sample")
+
+'''
+
+'''{r}
+require(ggplot2)
+require(grid)
+
+#5 histograms produced from the new dataframe created in problem 3
+p11 <- ggplot(A[1], aes(x=A[[1]]))
+p11 <- p11 + geom_histogram(colour = 'black',fill = 'gray') + labs(x=names(A)[[1]])
+print(p11)
+
+p22 <- ggplot(A[2], aes(x=A[[2]]))
+p22 <- p22 + geom_histogram(colour = 'black',fill = 'gray') + labs(x=names(A)[[2]])
+print(p22)
+
+p33 <- ggplot(A[3], aes(x=A[[3]]))
+p33 <- p33 + geom_histogram(colour = 'black',fill = 'gray') + labs(x=names(A)[[3]])
+print(p33)
+
+p44 <- ggplot(A[4], aes(x=A[[4]]))
+p44 <- p44 + geom_histogram(colour = 'black',fill = 'gray') + labs(x=names(A)[[4]])
+print(p44)
+
+p55 <- ggplot(A[5], aes(x=A[[5]]))
+p55 <- p55 + geom_histogram(colour = 'black',fill = 'gray') + labs(x=names(A)[[5]])
+print(p55)
+
+p66 <- ggplot(df[6], aes(x=df[[6]]))
+p66<- p66 + geom_histogram(colour = 'black',fill = 'gray') + labs(x=names(df)[[6]])
+print(p66)
+
+#arranging the plots onto one screen with the arrange.grid() builtin
+grid.arrange(p11, p22, p33, p44, p55, p66, ncol = 2)
+
+'''
+
+'''{r}
+#recalculating min values form the new data frame A created in 3
+min1 <- min(A[,1])
+min2 <- min(A[,2])
+min3 <- min(A[,3])
+min4 <- min(A[,4])
+min5 <- min(A[,5])
+min6 <- min(sample100[,5])
+
+#placing these new values in to a vector
+newSampleMin <- c(min1, min2, min3, min4, min5, min6)
+
+#calculating max values form the new dataframe created in 3
+max1 <- max(A[,1])
+max2 <- max(A[,2])
+max3 <- max(A[,3])
+max4 <- max(A[,4])
+max5 <- max(A[,5])
+max6 <- max(sample100[,5])
+
+#vector created to store each new max value
+newSampleMax <- c(max1, max2, max3, max4, max5, max6)
+
+# new mean values for each sample size in dataframe A
+m11 <- mean(A[,1])
+m22 <- mean(A[,2])
+m33 <- mean(A[,3])
+m44 <- mean(A[,4])
+m55 <- mean(A[,5])
+m66 <- mean(sample100[,5])
+#vector created to store each new mean value
+newSampleMean <- c(m11, m22, m33, m44, m55, m66)
+
+# new variance values for each sample size from dataframe A
+var1 <- var(A[,1])
+var2 <- var(A[,2])
+var3 <- var(A[,3])
+var4 <- var(A[,4])
+var5 <- var(A[,5])
+var6 <- var(sample100[,5])
+
+newSampleVar <- c(var1, var2, var3, var4, var5, var6)
+
+#placing these new vectors into a data frame labled xxx
+xxx <- data.frame(newSampleMin, newSampleMax, newSampleMean, newSampleVar)
+#transposing the dataframe so we can combine it with the dataframe created in problem 1
+xxx <- t(xxx)
+#renaming the columns in dataframe xxx
+colnames(xxx) <- c("1%Sample", "10%Sample", "25%Sample", "50%Sample", "80%Sample", "100%Sample")
+
+#combining the data frames created, xxx and df(created in problem 1) into a matrix labeled df1
+df1 <- rbind(df, xxx)
+
+#df1 hints that we want it in a dataframe so here we apply data.frame() to make df1 into a dataframe
+df1 <- data.frame(df1)
+#renaming the columns in df1
+colnames(df1) <- c("1%Sample", "10%Sample", "25%Sample", "50%Sample", "80%Sample", "100%Sample")
+
+'''
+
+'''{r}
+#6)
+#created a function that will print a histogram of the 100% sample of the column Whole_wgt in abalone
+#on the histogram we will place lines using geom_vline to mark the means from the sample sizes created in problem 1
+num6histo <- function(frame) 
+{
+  for (i in 1:length(frame)) {
+    col_mean <- SampleMean[[1]]
+    col_mean2 <- SampleMean[[2]]
+    col_mean3 <- SampleMean[[3]]
+    col_mean4 <- SampleMean[[4]]
+    col_mean5 <- SampleMean[[5]]
+    mean_Label = sprintf("%10f ", col_mean)
+    mean_Label2 = sprintf("%10f ", col_mean2)
+    mean_Label3 = sprintf("%10f ", col_mean3)
+    mean_Label4 = sprintf("%10f ", col_mean4)
+    mean_Label5 = sprintf("%10f ", col_mean5)
+    
+
+
+    num6plot <- ggplot(frame, aes(x=frame[[i]]),
+                    environment = environment())
+    num6plot <- num6plot + geom_histogram(colour = 'gray', fill = 'gray') + labs(x=names(frame)[[i]]) + geom_vline(xintercept=col_mean, colour='magenta', size=1) + geom_vline(xintercept=col_mean2, colour='blue') + geom_vline(xintercept=col_mean3, colour='black') + geom_vline(xintercept=col_mean4, colour='yellow', size=1) + geom_vline(xintercept=col_mean5, colour='green') + annotate("text",x=col_mean,y=0,label="1%=pink",hjust=0,) + annotate("text",x=col_mean2,y=0,label="10%=blue",hjust=0, vjust=-1) + annotate("text",x=col_mean3,y=0,label="25%=black",hjust=0, vjust=-2) + annotate("text",x=col_mean4,y=0,label="50%=yellow",hjust=0, vjust=-4) + annotate("text",x=col_mean5,y=0,label="80%=yellow",hjust=0, vjust=-6)
+  
+  print(num6plot)
+  }
+}
+
+num6histo(abalone[5])
+
+'''
+
+'''{r}
+
+#created a function that will print a histogram of the 100% sample of the column Whole_wgt in abalone
+#on the histogram we will place lines using geom_vline to mark the means from the sample sizes created in problem 3
+num7histo <- function(frame1) 
+{
+  for (i in 1:length(frame1)) {
+#defining col_means so we can place these values in our histograms with geom_vline  
+    col_mean <- newSampleMean[[1]]
+    col_mean2 <- newSampleMean[[2]]
+    col_mean3 <- newSampleMean[[3]]
+    col_mean4 <- newSampleMean[[4]]
+    col_mean5 <- newSampleMean[[5]]
+    mean_Label = sprintf("%10f ", col_mean)
+    mean_Label2 = sprintf("%10f ", col_mean2)
+    mean_Label3 = sprintf("%10f ", col_mean3)
+    mean_Label4 = sprintf("%10f ", col_mean4)
+    mean_Label5 = sprintf("%10f ", col_mean5)
+    
+
+#actually creating the histogram
+    num7plot <- ggplot(frame1, aes(x=frame1[[i]]),
+                    environment = environment())
+    num7plot <- num7plot + geom_histogram(colour = 'gray', fill = 'gray') + labs(x=names(frame1)[[i]]) + geom_vline(xintercept=col_mean, colour='magenta', size=1) + geom_vline(xintercept=col_mean2, colour='blue') + geom_vline(xintercept=col_mean3, colour='black') + geom_vline(xintercept=col_mean4, colour='yellow', size=1) + geom_vline(xintercept=col_mean5, colour='green') + annotate("text",x=col_mean,y=0,label="1%=pink",hjust=0,) + annotate("text",x=col_mean2,y=0,label="10%=blue",hjust=0, vjust=-1) + annotate("text",x=col_mean3,y=0,label="25%=black",hjust=0, vjust=-2) + annotate("text",x=col_mean4,y=0,label="50%=yellow",hjust=0, vjust=-4) + annotate("text",x=col_mean5,y=0,label="80%=yellow",hjust=0, vjust=-6)
+  
+  print(num7plot)
+  }
+}
+
+num7histo(abalone[5])
+'''
+
+#9)
+When resampling is done, it pulls the means of all the sample sizes closer together. This means the more times you sample, no matter the size of the sample, the values will get closer to the actual values of the mean of the entire dataset. 
+
+
